@@ -1,0 +1,20 @@
+Package: RODK
+Type: Package
+Title: R functions for Open Data Kit
+Version: 0.1.0
+Authors@R: person("Chrissy h", "Roberts", email = "chrissy.roberts@lshtm.ac.uk",role = c("aut", "cre"))
+Maintainer: Chrissy h Roberts <chrissy.roberts@lshtm.ac.uk>
+Description: A set of functions for working with data collected using Open Data Kit and ODK Aggregate
+    Use four spaces when indenting paragraphs within the Description.
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
+Imports: NA,
+    dplyr,
+    getPass,
+    anytime
+
+
+
+URL: https://github.com/chrissyhroberts/RODK/
+BugReports: https://github.com/chrissyhroberts/RODK/issues
