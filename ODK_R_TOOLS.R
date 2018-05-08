@@ -40,20 +40,30 @@ odk.briefcase.pull<-
     exclude.media.export=FALSE,   #flag -em
     overwrite.csv.export=TRUE,   #flag -oc
     update.odk.briefcase=FALSE
-            )
-        {
+            ){
+
+    message("installing packages if needed")
 
     #check if getPass is installed and install it if not
-    list.of.packages <- c("getPass")
+  message("checking for new packages")
+      list.of.packages <- c("getPass")
+
     new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
-    if(length(new.packages)) install.packages(new.packages)
-    require(getPass)
+    if(length(new.packages))
+      {
+      install.packages(new.packages)
+      message (paste("Installing ",new.packages))
+    }
+    message("loading getPass library")
+    library(getPass)
 
     #check if update.odk.briefcase flag was active (default) and update odk briefcase
-    if(update.odk.briefcase==T)
+   message("Checking to see if Briefcase should be updated.")
+      if(update.odk.briefcase==T)
       {
       message("Updating ODK Briefcase")
-      odk.briefcase.update()
+        download.file(url = "https://opendatakit.org/download/4476/",
+          destfile = paste(folderforsave, "/odkbriefcase.jar",sep = ""), mode = "wb")
       }
 
     #check that only online or offline is being used
@@ -103,7 +113,7 @@ odk.briefcase.pull<-
 
 
 #example
-odk.briefcase.pull(aggregate.url = "https://fiebress2.odk.lshtm.ac.uk/fiebress2/",odk.username = "admin",form.id = "meds.survey",export.dir = "MS1",storage.dir = "MS1_Storage",export.filename = "2018.04.23.MS1.csv",exclude.media.export = T,overwrite.csv.export = T,update.odk.briefcase = F)
+odk.briefcase.pull(aggregate.url = "https://fiebress2.odk.lshtm.ac.uk/fiebress2/",odk.username = "admin",form.id = "meds.survey",export.dir = "MS1",storage.dir = "MS1_Storage",export.filename = "2018.04.23.MS1.csv",exclude.media.export = T,overwrite.csv.export = T,update.odk.briefcase = T)
 
 ##################################################################################
 #simple call to rmd
