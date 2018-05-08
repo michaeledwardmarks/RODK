@@ -63,7 +63,7 @@ odk.briefcase.pull<-
       {
       message("Updating ODK Briefcase")
         download.file(url = "https://opendatakit.org/download/4476/",
-          destfile = paste(folderforsave, "/odkbriefcase.jar",sep = ""), mode = "wb")
+          destfile = paste( "./odkbriefcase.jar",sep = ""), mode = "wb")
       }
 
     #check that only online or offline is being used
@@ -113,40 +113,76 @@ odk.briefcase.pull<-
 
 
 #example
-odk.briefcase.pull(aggregate.url = "https://fiebress2.odk.lshtm.ac.uk/fiebress2/",odk.username = "admin",form.id = "meds.survey",export.dir = "MS1",storage.dir = "MS1_Storage",export.filename = "2018.04.23.MS1.csv",exclude.media.export = T,overwrite.csv.export = T,update.odk.briefcase = T)
+odk.briefcase.pull(aggregate.url = "https://roberts-beta-001.odk.lshtm.ac.uk/roberts-beta-001",odk.username = "admin",form.id = "ISNTD",export.dir = "MS1",storage.dir = "MS1_Storage",export.filename = "2018.04.23.MS1.csv",exclude.media.export = T,overwrite.csv.export = T,update.odk.briefcase = T)
+
+
+
+
+
+
+
+
+
+
+
 
 ##################################################################################
 #simple call to rmd
 
-odk.convert.csv<-function(format="pdf_document",csv.file,special.field=NULL,form.id=NULL,path.to.pdfmaker.rmd=".")
+odk.convert.csv<-function(csv.file,special.field=NULL,form.id=NULL,formatoutput="pdf_document")
 
 {
 # pull in the csv data
-odk.data<-read.csv(csv.file,header = T)
+odk.data<-read.csv(csv.file,header = T,stringsAsFactors = F)
+
+#check if anytime is installed and install it if not
+list.of.packages <- c("anytime","rmarkdown")
+new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
+if(length(new.packages)) install.packages(new.packages)
+library(anytime)
+library(rmarkdown)
 
 # enter loop for each row of the csv file
 for(i in 1:dim(odk.data)[1])
 {
-  #send a file for the current record to tmp
-  write.table(odk.data[i,],file = "tmp.txt",quote = F,sep = "\t",col.names = T,row.names = F)
-  #convert datetimes so that reports sort appropriately by date of submission
+  message(gsub(paste(odk.data[i,special.field],"_",form.id,"_", odk.data$SubmissionDate[i],".txt",sep=""),pattern = " |:|//",replacement = "."))
+  nametouse<-gsub(paste(odk.data[i,which(colnames(odk.data)==special.field)],"_",form.id,"_", odk.data$SubmissionDate[i],".Rmd",sep=""),pattern = " |:|//",replacement = ".")
+  nametousepdf<-gsub(paste(odk.data[i,which(colnames(odk.data)==special.field)],"_",form.id,"_", odk.data$SubmissionDate[i],".pdf",sep=""),pattern = " |:|//",replacement = ".")
+  nametousetitle<-gsub(paste(odk.data[i,which(colnames(odk.data)==special.field)],"_",form.id,"_", odk.data$SubmissionDate[i],sep=""),pattern = " |:|//",replacement = ".")
 
-  odk.data$SubmissionDate<-anytime(odk.data$SubmissionDate)
-  nametouse<-gsub(paste(odk.data[i,which(colnames(odk.data)==special.field)],"_",form.id,"_", odk.data$SubmissionDate[i],".pdf",sep=""),pattern = " |:|//",replacement = ".")
+  write.table(file = nametouse,x = "---",row.names = F,append = T,quote = F,col.names = F)
+  write.table(file = nametouse,x = paste("title: ",nametousetitle,sep=""),row.names = F,append = T,quote = F,col.names = F)
+  write.table(file = nametouse,x = paste("output: ",formatoutput,sep=""),row.names = F,append = T,quote = F,col.names = F)
+  write.table(file = nametouse,x = "name: test",row.names = F,append = T,quote = F,col.names = F)
+  write.table(file = nametouse,x = "---",row.names = F,append = T,quote = F,col.names = F)
+  write.table(file = nametouse,x = paste("report created: ",timestamp(),"  ",sep=""),row.names = F,append = T,quote = F,col.names = F)
 
-  #run RMD script to create report in pdf, pulling in any jpgs
-  rmarkdown::render(input = "pdfmaker.Rmd",
-                    output_format = "pdf_document",
-                    output_file = nametouse,
-                    output_dir = "reports")
 
+
+   for(j in 1:dim(odk.data)[2])
+  {
+
+
+
+
+    write.table((paste("**",names(odk.data)[j],"**  ",sep="")),row.names = F,col.names = F,file = nametouse,append = T,quote=F)
+
+    write.table(paste(odk.data[i,j],"  \n",sep=""),row.names = F,col.names = F,file = nametouse,append = T,quote=F)
+  }
+
+  render(nametouse, pdf_document(),params=list(title=nametousetitle,reportdate=Sys.Date()-1))
+  file.remove(nametouse) #cleanup
 }
 }
+
 
 ##################################################################################
 
 #example
-odk.convert.csv(format = "pdf_document",csv.file = "MS1/2018_04_23_MS1.csv",form.id = "medicines.survey",special.field = "participant.id")
+
+odk.convert.csv(csv.file = "MS1/2018_04_23_MS1.csv",special.field = "first_name",form.id = "ISNTD")
+
+a
 
 
 
@@ -179,39 +215,36 @@ odk.convert.csv(format = "pdf_document",csv.file = "MS1/2018_04_23_MS1.csv",form
 
 
 
-
-
-# function to convert CSV data in to a series of PDF files
-odk.convert.csv<-function(format="pdf_document",source.row,csv.file,special.field=NULL,form.id=NULL,path.to.pdfmaker.rmd=".")
+# function to convert CSV data in to a series of Podk.data files
+odk.convert.csv<-function(format="podk.data_document",source.row,csv.file,special.field=NULL,form.id=NULL,path.to.podk.datamaker.rmd=".")
 
 {
 require
-df<-read.csv(csv.file,header = T)
-df<-df[source.row,]
+odk.data<-read.csv(csv.file,header = T)
+odk.data<-odk.data[source.row,]
 
 #check if anytime is installed and install it if not
 list.of.packages <- c("anytime")
 new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
 if(length(new.packages)) install.packages(new.packages)
-require(anytime)
+library(anytime)
 
-message(gsub(paste(df[i,which(colnames(df)==special.field)],"_",form.id,"_", df$SubmissionDate[i],".txt",sep=""),pattern = " |:|//",replacement = "."))
-nametouse<-gsub(paste(df[i,which(colnames(df)==special.field)],"_",form.id,"_", df$SubmissionDate[i],".txt",sep=""),pattern = " |:|//",replacement = ".")
+message(gsub(paste(odk.data[i,which(colnames(odk.data)==special.field)],"_",form.id,"_", odk.data$SubmissionDate[i],".txt",sep=""),pattern = " |:|//",replacement = "."))
+nametouse<-gsub(paste(odk.data[i,which(colnames(odk.data)==special.field)],"_",form.id,"_", odk.data$SubmissionDate[i],".txt",sep=""),pattern = " |:|//",replacement = ".")
 
 part1<-paste(
 "```{r header, echo=FALSE}\n
-pres_title <- ",paste(df[i,which(colnames(df)==special.field)],"_",form.id," : ", df$SubmissionDate[i],sep=""),
+pres_title <- ",paste(odk.data[i,which(colnames(odk.data)==special.field)],"_",form.id," : ", odk.data$SubmissionDate[i],sep=""),
 "\npres_date <- ", paste('Report generated on ',Sys.Date()),"\n\n\n\n",sep="")
 
 part2<-qw("
 
 ```
-
----
+pres_title <- `This title`
 title: `r pres_title`
 author: `r pres_author`
 date: `r pres_date`
-output: pdf_document
+output: podk.data_document
 classoption: landscape
 ---
 
@@ -225,7 +258,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ")
 
 
-part3<-qw(as.character(list(df[i,])),pattern = ",")
+part3<-qw(as.character(list(odk.data[i,])),pattern = ",")
 ```{r, printoutdata, echo=FALSE}
 
 for(i in 1:dim(a)[2])
@@ -253,7 +286,11 @@ write.table(file = nametouse,x = part3,row.names = F,col.names = F,quote = T,app
 
 
 
-
+rmarkdown::render(input = "report.Rmd",
+                  output_file = "report.html",
+                  params = list(wc=getWordcloud(),
+                                table=getTab(),
+                                pie=getPie()))
 
 
 
@@ -267,10 +304,10 @@ write.table(file = nametouse,x = part3,row.names = F,col.names = F,quote = T,app
 
 
   #send a file for the current record to tmp
-  write.table(df[i,],file = "tmp.txt",quote = F,sep = "\t",col.names = T,row.names = F)
+  write.table(odk.data[i,],file = "tmp.txt",quote = F,sep = "\t",col.names = T,row.names = F)
   #convert datetimes so that reports sort appropriately by date of submission
 
-  df$SubmissionDate<-anytime(df$SubmissionDate)
+  odk.data$SubmissionDate<-anytime(odk.data$SubmissionDate)
 
 
 
@@ -283,10 +320,10 @@ write.table(file = nametouse,x = part3,row.names = F,col.names = F,quote = T,app
 
 
 
-  #run RMD script to create report in pdf, pulling in any jpgs
-  rmarkdown::render(input = "pdfmaker.Rmd",
+  #run RMD script to create report in podk.data, pulling in any jpgs
+  rmarkdown::render(input = "podk.datamaker.Rmd",
                     output_format = format,
-                    output_file = gsub(pattern = " |:",replacement = "_",x = paste(special.field,"_",form.id,"_", df$SubmissionDate[i],".pdf", sep='')),
+                    output_file = gsub(pattern = " |:",replacement = "_",x = paste(special.field,"_",form.id,"_", odk.data$SubmissionDate[i],".podk.data", sep='')),
                     output_dir = "reports",
                     )
 
@@ -303,7 +340,7 @@ paste(
 "
 ```{r header, echo=FALSE}
 pres_title <- ",
-paste(special.field,"_",form.id,"_", df$SubmissionDate[i]),
+paste(special.field,"_",form.id,"_", odk.data$SubmissionDate[i]),
 "\npres_date <- ",
 paste("Report generated on ",Sys.Date()),
 "```"
@@ -315,7 +352,7 @@ close(fileConn)
   title: `r pres_title`
 author: `r pres_author`
 date: `r pres_date`
-output: pdf_document
+output: podk.data_document
 classoption: landscape
 ---
 
