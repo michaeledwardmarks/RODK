@@ -155,7 +155,6 @@ for(i in 1:dim(odk.data)[1])
   write.table(file = nametouse,x = paste("output: ",formatoutput,sep=""),row.names = F,append = T,quote = F,col.names = F)
   write.table(file = nametouse,x = "name: test",row.names = F,append = T,quote = F,col.names = F)
   write.table(file = nametouse,x = "---",row.names = F,append = T,quote = F,col.names = F)
-  write.table(file = nametouse,x = paste("report created: ",timestamp(),"  ",sep=""),row.names = F,append = T,quote = F,col.names = F)
 
 
 
@@ -169,7 +168,9 @@ for(i in 1:dim(odk.data)[1])
 
     write.table(paste(odk.data[i,j],"  \n",sep=""),row.names = F,col.names = F,file = nametouse,append = T,quote=F)
   }
-
+  write.table(file = nametouse,x = paste("  report created: ",timestamp(),"  ",sep=""),row.names = F,append = T,quote = F,col.names = F)
+  write.table(file = nametouse,x = "  ",row.names = F,append = T,quote = F,col.names = F)
+  write.table(file = nametouse,x = "![rstudio](blue-250.png)",append = T,row.names = F,col.names = F,quote = F)
   render(nametouse, pdf_document(),params=list(title=nametousetitle,reportdate=Sys.Date()-1))
   file.remove(nametouse) #cleanup
 }
