@@ -1,0 +1,134 @@
+<?xml version="1.0"?>
+<h:html xmlns="http://www.w3.org/2002/xforms" xmlns:ev="http://www.w3.org/2001/xml-events" xmlns:h="http://www.w3.org/1999/xhtml" xmlns:jr="http://openrosa.org/javarosa" xmlns:orx="http://openrosa.org/xforms" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <h:head><!-- ODK Aggregate upload time: 2018-03-26T09:52:29.031+0000 on https://roberts-beta-001.odk.lshtm.ac.uk/roberts-beta-001 -->
+    <h:title>ISNTD</h:title>
+    <model>
+      <itext>
+        <translation default="true()" lang="default">
+          <text id="/ISNTD/ed_vs_chrissy/Edward:label">
+            <value form="image">jr://images/a.jpg</value>
+            <value>Edward</value>
+          </text>
+          <text id="/ISNTD/ed_vs_chrissy/Chrissy:label">
+            <value form="image">jr://images/b.jpg</value>
+            <value>Chrissy</value>
+          </text>
+        </translation>
+      </itext>
+      <instance>
+        <ISNTD id="ISNTD">
+          <intro/>
+          <first_name/>
+          <date_of_birth>1990-06-15</date_of_birth>
+          <post_started>2000-01-01</post_started>
+          <location_birth/>
+          <fave_animal/>
+          <select_one_likert/>
+          <ed_vs_chrissy/>
+          <my_signature/>
+          <selfie/>
+          <meta>
+            <instanceID/>
+          </meta>
+        </ISNTD>
+      </instance>
+      <bind nodeset="/ISNTD/intro" readonly="true()" type="string"/>
+      <bind nodeset="/ISNTD/first_name" type="string"/>
+      <bind constraint=". &lt;= today()" nodeset="/ISNTD/date_of_birth" type="date"/>
+      <bind nodeset="/ISNTD/post_started" type="date"/>
+      <bind nodeset="/ISNTD/location_birth" type="geopoint"/>
+      <bind nodeset="/ISNTD/fave_animal" type="select1"/>
+      <bind nodeset="/ISNTD/select_one_likert" type="select1"/>
+      <bind nodeset="/ISNTD/ed_vs_chrissy" type="select1"/>
+      <bind nodeset="/ISNTD/my_signature" type="binary"/>
+      <bind nodeset="/ISNTD/selfie" type="binary"/>
+      <bind calculate="concat('uuid:', uuid())" nodeset="/ISNTD/meta/instanceID" readonly="true()" type="string"/>
+    </model>
+  </h:head>
+  <h:body>
+    <input ref="/ISNTD/intro">
+      <label>This form is an example of how ODK allows different kinds of data entry. Please answer all the questions</label>
+    </input>
+    <input ref="/ISNTD/first_name">
+      <label>Please Enter Your name</label>
+    </input>
+    <input ref="/ISNTD/date_of_birth">
+      <label>Enter your date of birth</label>
+      <hint>This field has a constraint and default value</hint>
+    </input>
+    <input appearance="year" ref="/ISNTD/post_started">
+      <label>What year did you leave full time education?</label>
+      <hint>Input only year</hint>
+    </input>
+    <input appearance="placement-map" ref="/ISNTD/location_birth">
+      <label>Please find the town in which you were born</label>
+      <hint>When the map appears, find your home town and hold down your finger to place a marker. The press the save button 'shaped like a disk' to return to this survey.</hint>
+    </input>
+    <select1 ref="/ISNTD/fave_animal">
+      <label>What's your favourite of these animals</label>
+      <hint>you can only select one</hint>
+      <item>
+        <label>cats</label>
+        <value>cats</value>
+      </item>
+      <item>
+        <label>dogs</label>
+        <value>dogs</value>
+      </item>
+      <item>
+        <label>hens</label>
+        <value>hens</value>
+      </item>
+      <item>
+        <label>horses</label>
+        <value>horses</value>
+      </item>
+      <item>
+        <label>dragons</label>
+        <value>dragons</value>
+      </item>
+    </select1>
+    <select1 appearance="likert" ref="/ISNTD/select_one_likert">
+      <label>How much do you agree with the following statement : &quot;The guy doing this presentation is really good looking&quot;</label>
+      <item>
+        <label>strongly disagree</label>
+        <value>1</value>
+      </item>
+      <item>
+        <label>disagree</label>
+        <value>2</value>
+      </item>
+      <item>
+        <label>neither agree nor disagree</label>
+        <value>3</value>
+      </item>
+      <item>
+        <label>agree</label>
+        <value>4</value>
+      </item>
+      <item>
+        <label>strongly agree</label>
+        <value>5</value>
+      </item>
+    </select1>
+    <select1 appearance="quickcompact" ref="/ISNTD/ed_vs_chrissy">
+      <label>Touch the one with the nicest beard</label>
+      <hint>This kind of interaction is great for kids or those who can't read</hint>
+      <item>
+        <label ref="jr:itext('/ISNTD/ed_vs_chrissy/Edward:label')"/>
+        <value>Edward</value>
+      </item>
+      <item>
+        <label ref="jr:itext('/ISNTD/ed_vs_chrissy/Chrissy:label')"/>
+        <value>Chrissy</value>
+      </item>
+    </select1>
+    <upload appearance="signature" mediatype="image/*" ref="/ISNTD/my_signature">
+      <label>Signature widget (ODK Collect only)</label>
+      <hint>Trace your signature with your finger and press &quot;save and close&quot;</hint>
+    </upload>
+    <upload appearance="selfie" mediatype="image/*" ref="/ISNTD/selfie">
+      <label>Please take a selfie</label>
+    </upload>
+  </h:body>
+</h:html>
